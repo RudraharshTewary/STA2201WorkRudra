@@ -1,0 +1,6 @@
+"0","d_to_plot <- dm |> "
+"0","  filter(Age %in% c(10,20,30,40)) |> "
+"0","  select(Year:Male) |>"
+"0","  mutate(Mortality_Ratio = Female/Male) |>"
+"0","  pivot_longer(Female:Male, names_to = ""Sex"", values_to = ""Mortality"")"
+"0","d_to_plot"

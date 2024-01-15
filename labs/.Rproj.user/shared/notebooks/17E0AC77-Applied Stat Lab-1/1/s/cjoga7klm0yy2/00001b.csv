@@ -1,0 +1,6 @@
+"0","lowest_mortality_age <- dm|>"
+"0","  group_by(Year)|>"
+"0","  arrange(Female)|>"
+"0","  slice(1) |>"
+"0","  select(Year, Age, Female)"
+"0","lowest_mortality_age"
