@@ -1,0 +1,13 @@
+"0","library(tidyverse)"
+"0","dm <- read_table(""https://www.prdh.umontreal.ca/BDLC/data/ont/Mx_1x1.txt"", skip = 2, col_types = ""dcddd"")"
+"2","Warning: 494 parsing failures.
+row    col               expected actual                                                     file
+108 Female no trailing characters      . 'https://www.prdh.umontreal.ca/BDLC/data/ont/Mx_1x1.txt'
+109 Female no trailing characters      . 'https://www.prdh.umontreal.ca/BDLC/data/ont/Mx_1x1.txt'
+110 Female no trailing characters      . 'https://www.prdh.umontreal.ca/BDLC/data/ont/Mx_1x1.txt'
+110 Male   no trailing characters      . 'https://www.prdh.umontreal.ca/BDLC/data/ont/Mx_1x1.txt'
+110 Total  no trailing characters      . 'https://www.prdh.umontreal.ca/BDLC/data/ont/Mx_1x1.txt'
+... ...... ...................... ...... ........................................................
+See problems(...) for more details.
+"
+"0","dm"
