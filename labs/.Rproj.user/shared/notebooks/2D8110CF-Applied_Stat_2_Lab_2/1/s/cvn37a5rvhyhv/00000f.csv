@@ -1,0 +1,2 @@
+"0","delay_2022 <- delay_2022 |> "
+"0","  mutate(station_clean = ifelse(str_starts(station, ""ST""), word(station, 1,2), word(station, 1)))"

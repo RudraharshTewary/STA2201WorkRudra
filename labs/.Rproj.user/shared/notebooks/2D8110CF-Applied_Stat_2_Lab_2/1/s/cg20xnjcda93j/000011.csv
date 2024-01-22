@@ -1,0 +1,5 @@
+"0","delay_pca <- prcomp(dwide[,3:ncol(dwide)])"
+"0",""
+"0","df_out <- as_tibble(delay_pca$x)"
+"0","df_out <- bind_cols(dwide |> select(line, station_clean), df_out)"
+"0","head(df_out)"

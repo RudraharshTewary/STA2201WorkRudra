@@ -1,5 +1,0 @@
-"0","dm$Age <- as.numeric(dm$Age)"
-"0","std_dev <- dm |>"
-"0","  group_by(Age) |>"
-"0","  summarise(across(2:4,sd,na.rm=TRUE))"
-"0","std_dev"

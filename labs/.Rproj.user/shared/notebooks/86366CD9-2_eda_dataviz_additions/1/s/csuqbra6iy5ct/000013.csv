@@ -1,0 +1,4 @@
+"0","df_out_r <- as_tibble(delay_pca$rotation)"
+"0","df_out_r$feature <- colnames(dwide[,3:ncol(dwide)])"
+"0",""
+"0","df_out_r"

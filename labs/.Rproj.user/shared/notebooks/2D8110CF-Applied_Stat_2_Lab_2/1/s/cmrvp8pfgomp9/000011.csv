@@ -1,0 +1,6 @@
+"0","## Removing the observations that have non-standardized lines"
+"0",""
+"0","delay_2022 <- delay_2022 |> filter(line %in% c(""BD"", ""YU"", ""SHP"", ""SRT"", ""YU/BD""))"
+"0",""
+"0","ggplot(data = delay_2022) + "
+"0","  geom_histogram(aes(x = min_delay))"

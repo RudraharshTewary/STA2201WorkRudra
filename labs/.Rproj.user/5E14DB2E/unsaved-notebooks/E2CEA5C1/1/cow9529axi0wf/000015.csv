@@ -1,0 +1,4 @@
+"0","campaign_data_mayoral$contributor_type_desc <- as.factor(campaign_data_mayoral$contributor_type_desc)"
+"0","campaign_data_mayoral$contribution_type_desc <- as.factor(campaign_data_mayoral$contribution_type_desc)"
+"0","campaign_data_mayoral$contribution_amount <- as.numeric(campaign_data_mayoral$contribution_amount)"
+"0","campaign_data_mayoral"

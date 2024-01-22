@@ -1,5 +1,0 @@
-"0","dm$Age <- as.numeric(dm$Age)"
-"0","lm_table <- dm |>"
-"0","  filter(Age < 106,Year==2000) |>"
-"0","  select(Female,Age)"
-"0","lm_table"

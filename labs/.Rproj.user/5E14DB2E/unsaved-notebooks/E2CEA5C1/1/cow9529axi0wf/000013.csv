@@ -1,0 +1,4 @@
+"0","not_all_na <- function(x) all(!is.na(x))"
+"0","campaign_data_mayoral <- campaign_data_mayoral|>"
+"0","                          select(where(not_all_na))"
+"0","campaign_data_mayoral"
