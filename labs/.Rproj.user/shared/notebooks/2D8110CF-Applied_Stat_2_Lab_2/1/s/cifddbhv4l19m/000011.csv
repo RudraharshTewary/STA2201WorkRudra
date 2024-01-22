@@ -1,4 +1,0 @@
-"0","ggplot(data = delay_2022) + "
-"0","  geom_density(aes(x = min_delay, color = day), bw = .08) + "
-"0","  scale_x_log10() + "
-"0","  facet_wrap(~line)"

@@ -1,3 +1,0 @@
-"0","ggplot(data = delay_2022) + "
-"0","  geom_histogram(aes(x = min_delay, fill = line), position = 'dodge', bins = 10) + "
-"0","  scale_x_log10()"

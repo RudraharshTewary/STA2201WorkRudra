@@ -1,4 +1,0 @@
-"0","all_data <- search_packages(""campaign"")"
-"0","campaign_id <- all_data$id"
-"0","resource <- list_package_resources(campaign_id[1])"
-"0","resource"

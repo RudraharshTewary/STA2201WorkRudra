@@ -1,4 +1,0 @@
-"0","delay_2022 <- delay_2022 |> "
-"0","  mutate(contains_yu_bd = str_detect(str_to_lower(line), ""bd"")&str_detect(str_to_lower(line), ""yu"")) |> "
-"0","  mutate(line = ifelse(contains_yu_bd, ifelse(line==""YU/BD"", line, ""YU/BD""), line))  |> "
-"0","  select(-contains_yu_bd) "
