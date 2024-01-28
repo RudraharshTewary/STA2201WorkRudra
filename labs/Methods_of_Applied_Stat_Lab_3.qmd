@@ -82,37 +82,33 @@ theta_values <- seq(0, 1, by = 0.01)
 likelihood <- dbinom(x, size = n, prob = theta_values)
 data <- data.frame(theta = theta_values, likelihood = likelihood)
 
-ggplot(data, aes(x = theta, y = likelihood)) +
-  geom_histogram(stat = "identity", fill = "skyblue", color = "black", bins = 30) +
-  labs(title = "Binomial Likelihood for Women Aged 65+",
-       x = "Proportion of Women Happy (Theta)",
-       y = "Likelihood") +
-  theme_minimal()
-
-```
-We can plot the priors and posteriors with the following code block:
-```{r}
-
-library(ggplot2)
-
 beta_pdf <- function(theta, alpha, beta) {
   dbeta(theta, shape1 = alpha, shape2 = beta)
 }
 
-ggplot(data, aes(x = theta)) +
+ggplot(data, aes(x = theta, y = likelihood)) +
+  geom_histogram(stat = "identity", fill = "skyblue", color = "black", bins = 30) +
   stat_function(fun = beta_pdf, args = list(alpha = 1, beta = 1),
-                geom = "line", aes(color = "Prior"), size = 1) +
+                geom = "line", aes(color = "Prior"), size = 1, linetype = "dotted") +
   stat_function(fun = beta_pdf, args = list(alpha = alpha_posterior, beta = beta_posterior),
                 geom = "line", aes(color = "Posterior"), size = 1, linetype = "dashed") +
 
   stat_function(fun = beta_pdf, args = list(alpha = 10, beta = 10),
-                geom = "line", aes(color = "Prior_10"), size = 1) +
+                geom = "line", aes(color = "Prior_10"), size = 1, linetype = "dotted") +
   stat_function(fun = beta_pdf, args = list(alpha = alpha_posterior_new, beta = beta_posterior_new),
                 geom = "line", aes(color = "Posterior_10"), size = 1, linetype = "dashed") +
   labs(title = "Beta Prior and Posterior for Women Aged 65+",
        x = "Proportion of Women Happy (Theta)",
        y = "Density") +
-  scale_color_manual(values = c("Prior" = "blue", "Posterior" = "red","Prior_10"="black","Posterior_10"="purple")) +
+  scale_color_manual(values = c("Prior" = "blue", "Posterior" = "red","Prior_10"="green","Posterior_10"="purple", "Likelihood" = "black")) +
+  theme_minimal()
+
+# We can also get a seperate plot of likelihood as follows:
+ggplot(data, aes(x = theta, y = likelihood)) +
+  geom_histogram(stat = "identity", fill = "skyblue", color = "black", bins = 30) +
+  labs(title = "Plot of likelihood function",
+           x = "Proportion of Women Happy(Theta)",
+           y = "Likelihood")+
   theme_minimal()
 
 
@@ -121,7 +117,7 @@ ggplot(data, aes(x = theta)) +
 We get the following interpretations on both plots :-
 1) Likelihood plot :- Upon a cursory examination of the binomial likelihood plot, we can infer that the likelihood suggests that based on the data, 85-90% of women aged 65+ would be happy, with the range of 85-90% being the most likely proportion.
 
-2) Priors and Posteriors plot :- Upon looking at the prior and posterior plot for the Beta(1,1) and Beta(5,5) priors. We see that the Beta(1,1) prior agrees to the likelihood plot that we obtained above. While, a Beta(5,5) prior introduces the notion that we have prior information suggesting that the real proportion of 65+ women who should be happy is around $50\%$, causing the posterior distribution of $\theta$ based on the data to shift left, causing the new suggested proportion to be around $80\%$.
+2) Priors and Posteriors plot :- Upon looking at the prior and posterior plot for the Beta(1,1) and Beta(5,5) priors. We see that the Beta(1,1) prior agrees to the likelihood plot that we obtained above. While, a Beta(10,10) prior introduces the notion that we have prior information suggesting that the real proportion of 65+ women who should be happy is around $50\%$, causing the posterior distribution of $\theta$ based on the data to shift left, causing the new suggested proportion to be around $80\%$.
 
 ## Question 5
 
