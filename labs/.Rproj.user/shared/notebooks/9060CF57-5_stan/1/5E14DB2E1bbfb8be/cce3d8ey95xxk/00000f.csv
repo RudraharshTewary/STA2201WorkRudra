@@ -1,0 +1,3 @@
+"0","dsamples <- fit  |> "
+"0","  gather_draws(mu, sigma) # gather = long format"
+"0","dsamples"

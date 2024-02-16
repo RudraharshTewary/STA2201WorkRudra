@@ -1,0 +1,20 @@
+---
+title: "Lab 5"
+format: pdf
+editor: visual
+---
+
+## Question 1
+
+```{r}
+library(tidyverse)
+library(rstan)
+library(tidybayes)
+library(here)
+library(skimr)
+kidiq <- read_rds(here("kidiq.RDS"))
+kidiq
+```
+```{r}
+
+```

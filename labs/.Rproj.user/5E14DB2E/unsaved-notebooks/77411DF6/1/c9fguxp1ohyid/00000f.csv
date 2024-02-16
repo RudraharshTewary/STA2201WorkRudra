@@ -1,0 +1,4 @@
+"0","ds <- ds %>%"
+"0","rename(birthweight = dbwt, gest = combgest) %>%"
+"0","mutate(preterm = ifelse(gest<32, ""Y"", ""N"")) %>%"
+"0","filter(ilive==""Y"",gest< 99, birthweight<9.999)"

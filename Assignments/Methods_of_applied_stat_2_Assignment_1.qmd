@@ -1,0 +1,428 @@
+---
+title: "Methods_of_Applied_Stat_2_Assignment_1"
+format: pdf
+editor: visual
+author: Rudraharsh Tewary
+---
+
+
+
+## Question 1
+
+### a)
+
+Following the given assumptions and law of total expectation, we calculate $E[Y]$ as :
+
+$$
+E[Y] = E[E[Y|\theta]]\\
+     = E[\mu\theta]\\
+     = \mu \times E[\theta]\\
+     = \mu  
+$$
+
+Similarly, we can calculate Variance as:
+
+$$
+Var[Y] = E[Var[Y|\theta]] + Var[E[Y|\theta]]\\
+       = E[\mu \theta] + Var[\mu \theta]\\
+       = \mu + \mu^2\sigma^2\\
+       = \mu (1 + \mu\sigma^2)
+$$
+
+### b)
+
+Now, to get the distribution of $Y$, we first assume that $\theta \sim Gamma(\alpha,\beta)$, we know the Moment Generating Function (MGF) of $\theta$ is $M_{\theta}(t) = (1- \beta t)^{-\alpha}$ and the MGF of $Y|\theta$ is $M_{Y|\theta}(t) = e^{\mu\theta(e^t-1)}$. So, we proceed to calculate as follows:
+
+$$
+M_{Y}(t) = E[e^{tY}]\\
+         = E[E[e^{tY}|\theta]]\\
+         = E[e^{\mu\theta(e^t-1)}]\\
+         = M_{\theta}(\mu(e^t-1))\\
+         = (1-\beta \mu(e^t-1))^{-\alpha}\\
+         = (\frac{\frac{1}{1 + \beta \mu}}{1 - (1 - \frac{1}{1 + \beta \mu})e^t})^{-\alpha}
+$$
+Which is nothing but the Moment Generating Function of negative binomial, so, we can say that $Y \sim NB(\alpha, \frac{1}{1 + \mu \beta})$.
+
+### c)
+
+If we want to get $E[Y] = \mu$ and $Var[Y] = \mu(1 + \mu\sigma^2)$. We use the mean and variance of Negative Binomial distribution.
+$$
+E[Y] = \frac{\alpha (1 - \frac{1}{1+\mu \beta}) }{\frac{1}{1+\mu\beta}}\\
+     = \mu
+$$
+And, We know
+$$
+Var[Y] = \frac{\alpha (1 - \frac{1}{1+\mu \beta}) }{(\frac{1}{1+\mu\beta})^2}\\
+       = \mu (1 + \mu\sigma^2) 
+$$
+Solving the above equations for $\alpha$ and $\beta$, we get the values for them as :
+$$
+\alpha = \frac{1}{\sigma^2}\\
+\beta = \sigma^2
+$$
+
+## Question 2
+
+### a)
+
+We generate the data and the plot with the following chunk of code:
+```{r}
+
+income <- rnorm(1000, log(10000), log(100))
+payments <- rnorm(1000, log(3500), log(30))
+hist(income)
+hist(payments)
+```
+
+### b)
+
+We generate the scatter plot with the following chunk of code:
+```{r}
+library(ggplot2)
+data_1 <- data.frame(income,payments)
+ggplot(data = data_1, aes(x=income,y=payments))+
+  geom_point()+
+  geom_smooth()
+```
+We observe from the following scatter plot that there doesnt seem to exist a correlation between the distribution of income and payments, thats why the line of best fit goes through the middle.
+
+### c)
+
+We create the survey column in the following code block:
+```{r}
+scaled_income <- scale(income)
+scaled_payments <- scale(payments)
+calculate_survey <- function(z1, z2) {
+  random_noise <- rnorm(length(z1))  
+  sum_z_scores <- z1 + z2 + random_noise
+  survey <- sum_z_scores > 0
+  return(survey)
+}
+data_1$survey <- calculate_survey(scaled_income,scaled_payments)
+
+```
+
+We can proceed to calculate the mean income and payment statistics for the surveyed and non_surveyed group of the population in the next code chunk:
+
+```{r}
+head(data_1)
+mean_income <- mean(data_1$income[data_1$survey == TRUE])
+mean_income
+mean_payments <- mean(data_1$payments[data_1$survey == TRUE])
+mean_payments
+mean_income_2 <- mean(data_1$income[data_1$survey == FALSE])
+mean_income_2
+mean_payments_2 <- mean(data_1$payments[data_1$survey == FALSE])
+mean_payments_2
+```
+Now, looking at the way we assigned the survey value to the population, we see that our method would be more likely to survey people with a higher income and payment. This leads to us observing that same trend in our summary statistics where in we notice that people who were surveyed tended to have on average a higher income and payment value than the non-surveyed population.
+
+### d)
+
+We make the linear models in the following code chunk:
+```{r}
+linear_model_1 <- lm(payments ~ income, data = subset(data_1,survey==TRUE))
+linear_model_2 <- lm(payments ~ income, data = data_1)
+summary(linear_model_1)
+summary(linear_model_2)
+
+plot(data_1$income, data_1$payments, col = ifelse(data_1$survey, "pink", "green"), 
+     pch = 16, xlab = "Income", ylab = "Payments", main = "Income vs. Payments")
+
+# Adding regression lines
+abline(linear_model_2, col = "red", lwd = 2)
+abline(linear_model_1, col = "blue", lwd = 2)
+legend("topright", legend = c("Total Population", "Surveyed Fathers"), 
+       col = c("red", "blue"), lty = 1, lwd = 2)
+
+```
+We see that the first model which was only fitted on the surveyed population assumes there to be a significant relationship between income level and payment values. But, in the second model fitted on the whole dataset, we see that there is no significant relationship between income level and payments
+
+
+### e)
+
+By observing the plots and summary of our models, we begin to see a very clear difference. That is, an ecological fallacy created by the introduction of the 'survey' variable in the dataset. We observed previously that due to the random nature of our generated values, there should be no correlation between payments and income. However, by using the 'survey' value in our model, we see that the linear model gives a very significant p-value to the income covariate, whereas if we use the whole data we see that the model gives an actual non-significant p-value to the income covariate
+
+## Question 3
+
+```{r}
+hurricane_data <- read.csv("C:/Users/rudra/Downloads/pnas_1402786111_sd01.csv")
+```
+
+```{r}
+library(janitor)
+hurricane_data <- clean_names(hurricane_data)
+head(hurricane_data)
+```
+### a)
+
+We create the graphs in the following code chunk:
+```{r}
+ggplot(data = hurricane_data, aes(x=mas_fem,y=alldeaths))+
+  geom_point()
+ggplot(data = hurricane_data, aes(x=minpressure_updated_2014,y=alldeaths))+
+  geom_point()
+ggplot(data = hurricane_data,aes(x=ndam,y=alldeaths))+
+  geom_point()
+```
+
+1. In the first graph, we observe that the distribution of deaths caused by hurricanes is pretty even for both extremes of the mas_fem index, with hurricanes having feminine/masculine names causing nearly equivalent death counts. Though there is a presence of few outliers in death counts in the feminine side of the graph.
+2. In the second graph, we notice that the air pressure of the hurricane has no visible impact on the number of deaths caused by it.
+3. In the third graph, we notice that most hurricanes caused damage between ndam 0 to 20,000. With some hurricanes causing major damage, we also noticed that the death count is not highly correlated with damage, with hurricanes that caused extreme infrastructural damage having lower death counts than some hurricanes which had lower damage and higher death counts.
+
+
+### b)
+
+We can define the poisson model in the following code chunk:
+```{r}
+poisson_model <- glm(alldeaths ~ mas_fem, data = hurricane_data, family = poisson)
+summary(poisson_model)
+```
+We get a low and positive coefficient estimate for the mas_fem index, with a significant p-value, which means the model thinks that, for the mas_fem index the following relation holds $e^{(2.5 + x \times 0.073873)}$. Which means that for each increase of the mas_fem index, the deaths will increase multiplicatively by $e^{(0.073873)} \approx 1.07$.
+
+We test for overdispersion in the following code block:
+```{r}
+library(AER)
+dispersiontest(poisson_model,trafo=1)
+```
+We see that 'dispersiontest' gives us $\alpha = 71.7$ which means the data is heavily overdispersed. To account for that, we proceed to fit a quasipoisson model.
+
+We define a quasipoisson model in the following code chunk:
+```{r}
+quasipoisson_model <- glm(alldeaths ~ mas_fem, data=hurricane_data,family = quasipoisson)
+summary(quasipoisson_model)
+```
+We see that the interpretation drastically changed with the quasipoisson model, although the coefficient estimates stay mostly the same. Our standard error for the coefficients increased by an order of a magnitude, also the p-value for 'mas_fem' heavily jumped, causing it to become non-significant and the model suggesting there is no correlation between that index and deaths.
+
+### c)
+
+We reproduce model 4 given in table S2 using the following code:
+```{r}
+library(MASS)
+model_4 <- glm.nb(alldeaths ~ z_min_pressure_a + z_mas_fem + zndam + z_mas_fem*z_min_pressure_a + z_mas_fem*zndam, data = hurricane_data)
+summary(model_4)
+```
+We calculate the effect of femininity on deaths given median pressure and damage using the following code chunk:
+```{r}
+median_dam <- median(hurricane_data$zndam,na.rm = TRUE)
+median_press <- median(hurricane_data$z_min_pressure_a,na.rm = TRUE)
+
+coefs <- model_4$coefficients
+
+coefs["z_mas_fem"] + coefs["z_min_pressure_a:z_mas_fem"]*median_press + coefs["z_mas_fem:zndam"]*median_dam
+```
+We get that for median pressure and damage, given a unit increase in z_mas_fem, the average of the logarithm of deaths decreases by 0.1626146
+
+### d)
+
+We use the following code chunk to predict the deaths caused by hurricane sandy estimated using model_4:
+```{r}
+library(tidyverse)
+new_data <- data.frame(
+  z_min_pressure_a =  hurricane_data[hurricane_data$name=="Sandy","z_min_pressure_a"],
+  z_mas_fem = hurricane_data[hurricane_data$name=="Sandy","z_mas_fem"],
+  zndam = hurricane_data[hurricane_data$name=="Sandy","zndam"]
+)
+
+pred_death <- predict(model_4,newdata = new_data,type = "response")
+pred_death
+
+actual_death <- hurricane_data |>
+                filter(name == "Sandy")
+actual_death$alldeaths
+```
+We see that the model is horribly off predicting the number of deaths to be 20,806. Which is way off the actual death count of 159. Which means the model has very bad prediction capabilities.
+
+### e)
+
+Upon reading the archival study of the paper, I gleamed the following strengts and weaknesses of that section:
+
+Strengths
+
+1. One strength was the time period of their data, taking samples in 62 year span of 1950-2012 would give a comprehensive range of hurricanes with varying levels of severity and femininity.
+
+2. The idea of using a negative binomial regression for modelling the data was also a good choice due to the data being count data and intrinsically overdispersed.
+
+Weaknesses
+
+1. Except some very obvious names, the perceived gender of a name can be quite subjective, so to make the index more robust, more people should have been surveyed. Not to mention, restricting the analysis to hurricanes in the United States is a weakness, to make the analysis more robust, global hurricanes which made landfall should have been considered.
+
+2. Again, the authors aim to establish a correlation between the lethality of a hurricane and its femininity, but the data used in the archival study is not large enough to confidently establish such a link, most male and female hurricanes in the dataset have similar death counts, with only some female hurricanes having higher outlier level death counts. Not to mention, multiple factors which affect a hurricane's death count like path, width, population density of area which they hit, are important factors which haven't been talked about. It might be much better to take a proportion estimate of the damage/deaths caused by a hurricane
+
+### f)
+
+No, I am not convinced by the analysis and results of the authors in their study. Their claim of establishing a strong link between the MFI (Mas-Fem Index) of a hurricane's name and its death count is flimsy at best. First of all, the trend itself is not uniform, the authors claim that the relation only establishes itself in the case of severe hurricanes, even then, the veracity of their claims is questionable due to them only using data of hurricanes in the United States. Then, the statistical models used for their archival study are not great at explaining the trends in the data, their first 3 models have outright bad summary statistics, and the final model which they use, a negative binomial model with standardized covariates and interaction terms, is also not good enough. Although the model has decent summary statistics and low overdispersion. It has horrible prediction accuracy, being off by a multiple of 133 when asked to predict the death counts of hurricane sandy. This would indicate that the model might be cherry picked. Again, the question asked by the authors of the paper that the perceived femininity of a hurricane might cause people to take lesser protective action can be a good social science question, but there are a lot of factors that havent been considered which impede this analysis. One, hurricanes themselves are not highly frequent events, much less hurricanes which form, make landfall and cause damage to public property. Secondly, the authors dont take into account that a hurricane might be much more lethal simply due to the population density of an area, or the development level of the area that the hurricane hits. Finally, prevailing social sentiments of a locality also matter, in some places people might be just that much lesser inclined to evacuate, causing more deaths to occur if a hurricane hits.
+
+## Question 4
+
+### a) 
+
+In the following series of code chunks, we will tidy up the dataset:
+```{r}
+immigrant <- read.csv("C:/Users/rudra/Documents/98100468.csv")
+```
+
+```{r}
+immigrant <- clean_names(immigrant)
+drops <- c('symbol','symbol_1','symbol_2','symbol_3','symbol_4','symbol_5','symbol_6','symbol_7','symbol_8','symbol_9','symbol_10','ref_date')
+immigrant <- immigrant[ , !(names(immigrant) %in% drops)]
+head(immigrant)
+```
+
+```{r}
+immigrant <- immigrant|>
+  select(geo,
+         visible_minority = visible_minority_15,
+         age = age_15a,
+         gender = gender_3,
+         statistics = statistics_3,
+         commute = main_mode_of_commuting_11a,
+         non_immigrants = immigrant_status_and_period_of_immigration_11_non_immigrants_2,
+         immigrants = immigrant_status_and_period_of_immigration_11_immigrants_3,
+         non_permanent_residents = immigrant_status_and_period_of_immigration_11_non_permanent_residents_11)
+```
+
+```{r}
+immigrant <- immigrant |>
+  filter(grepl("(CMA)", geo)) |>
+  filter(!grepl("Total", visible_minority) & 
+         !grepl("Total", age) & 
+         !grepl("Total", gender))|>
+  filter(statistics == "Count")|>
+  filter(commute %in% 
+           c("Car, truck or van", "Public transit", "Active transportation", "Other method"))
+```
+
+
+```{r}
+immigrant$immigrants_count <- immigrant$immigrants + immigrant$non_permanent_residents
+immigrant <- immigrant |>
+  select(
+    geo,
+    visible_minority,
+    age,
+    gender,
+    commute,
+    non_immigrants,
+    immigrants = immigrants_count)
+head(immigrant)
+```
+
+```{r}
+immigrant_new <- immigrant |>
+  mutate(commuting = ifelse(commute == "Public transit", "Public", "Non-Public")) |>
+  group_by(geo, visible_minority, age, gender, commuting) |>
+  summarise(non_immigrant = sum(non_immigrants), immigrant = sum(immigrants))
+
+head(immigrant_new)
+```
+
+
+```{r}
+immigrant_long <- immigrant_new |>
+  pivot_longer(cols = c('immigrant', 'non_immigrant'),
+               names_to = "immigrant_status",
+               values_to = "pop_count")|>
+  pivot_wider(names_from = "commuting",values_from = "pop_count")
+
+immigrant_long <- immigrant_long|>
+                  rename(public = Public, non_public = `Non-Public`)
+immigrant_long$total = immigrant_long$public + immigrant_long$non_public
+
+head(immigrant_long)
+```
+
+
+```{r}
+library(stringr)
+
+immigrant_long$province <- str_extract(immigrant_long$geo, "\\(CMA\\),\\s(.+)$")
+```
+
+### b) 
+
+In the following code chunks, we generate plots for EDA of the dataset:
+```{r, fig.width=11,fig.height=10}
+immigrant_long |>
+  group_by(geo)|>
+  summarise(public = sum(public), total = sum(total))|>
+ggplot(aes(x=public/total,y=geo))+
+  geom_col()+
+  geom_smooth()
+```
+
+```{r, fig.width=11,fig.height=10}
+immigrant_long |>
+  group_by(visible_minority)|>
+  summarise(public = sum(public), total = sum(total))|>
+ggplot(aes(x=public/total,y=visible_minority))+
+  geom_col()+
+  geom_smooth()
+```
+
+```{r, fig.width=11,fig.height=10}
+immigrant_long |>
+  group_by(age)|>
+  summarise(public = sum(public), total = sum(total))|>
+ggplot(aes(x=public/total,y=age))+
+  geom_col()+
+  geom_smooth()
+```
+
+For each of our graphs, we inspect the proportion 'public/total' which tells us the proportion of users of public transit over the total, we make the following inferences from the data:
+
+* In most metropolitan areas the proportion of people who use public transit is significantly lower than the biggest centers of population in the country, namely Montreal,Toronto and Vancouver.
+
+* If we evaluate by ethnicity, the minority population of black people have the highest ratio of use of public transit, with filipinos following close in second place. 'Not a Visible Minority' shows us that most people who are not part of a minority have the lowest ratio of public transit use.
+
+* We also see the trend the public transit is most frequently used by young people, with a high density of users being the age groups of 15-34 years old. This is unsurprising due to the physical effort required to use public transport and that younger people would have lesser access to private transportation.
+
+
+### c)
+
+We can define the model in the following code chunk, we use a poisson glm as public transit users are discrete count values, secondly, as we are interested in the proportion of public transit users to the total, we offset the model by the total:
+```{r}
+library(MASS)
+library(brglm)
+library(logistf)
+immigrant_long <- immigrant_long|>
+                  filter(total!= 0)
+
+immigrant_model <- glm(public ~ geo + visible_minority + age + gender + immigrant_status + province,offset = log(total)  ,data = immigrant_long, family = poisson)
+summary(immigrant_model)
+```
+Looking at the summary of the model and the obtained coefficient values, we see that the model's estimates are similar to our EDA, the highest positive coefficients are offered to the biggest metro cities of Toronto, Vancouver and Montreal. Similarly, the highest positive coefficients in other categories are Black people for minorities, and young people in the age group of 15-24 years old.
+
+### d)
+
+We use our model to get predictions of the given data in the following code chunk:
+```{r}
+new_data <- data.frame(geo = "Edmonton (CMA), Alta.",
+                       visible_minority = "Not a visible minority",
+                       age = "35 to 44 years",
+                       gender = "Men+",
+                       immigrant_status = "non_immigrant",
+                       province = '(CMA), Alta.',
+                       total=1
+                       )
+print(new_data)
+prediction <- predict(immigrant_model,newdata = new_data,type = "response")
+prediction
+new_data_2 <- data.frame(geo = "Toronto (CMA), Ont.",
+                       visible_minority = "Not a visible minority",
+                       age = "35 to 44 years",
+                       gender = "Men+",
+                       immigrant_status = "non_immigrant",
+                       province = '(CMA), Ont.',
+                       total = 1
+                       )
+prediction_2 <- predict(immigrant_model, newdata = new_data_2, type = 'response')
+prediction_2
+
+```
+
+We see that the predictions are off by just a bit to the real values, with $3%$ being the proportion of public transit users in Edmonton, and $8%$ being the proportion of public transit users in Toronto. Although the predicitons are not perfect, we see that the model is able to account for the effects of our covariates and is able to get an idea of how much public transit will be used given the demographics and structure and location of a city.
+
+### e)
+
+In our analysis, we took the transportation dataset from StatCan and after extensive clean-up and editing of the dataset, we started analyzing the trends of public transit use in different metropolitan areas across the country. We managed to uncover trends of public transport use depending on age, ethnicity and the city itself. We created a poisson model with an offset to analyze and predict the impact of these covariates on the proportion of public transit use. Our model has a few limitations, namely it having not a great fit as we can see from the deviance scores, secondly its prediction accuracy is also not great compared to the actual values in the dataset. For analysis, some more variables that would be of more interest are the inclusion of time, that is year when the proportions were counted/recorded so that we can analyze time series trends. Secondly, an inclusion of the economy of a city may also be decent to assess the quality of public infrastructure present. Finally, population density will also give a good idea because a higher population might neccesitate need of public transport.

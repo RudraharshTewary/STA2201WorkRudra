@@ -1,0 +1,7 @@
+"0","ds$log_weight <- log(ds$birthweight)"
+"0","ds$log_gest_c <- (log(ds$gest) - mean(log(ds$gest)))/sd(log(ds$gest))"
+"0","# put into a list"
+"0","stan_data <- list(N = nrow(ds),"
+"0","log_weight = ds$log_weight,"
+"0","log_gest = ds$log_gest_c)"
+"0",""

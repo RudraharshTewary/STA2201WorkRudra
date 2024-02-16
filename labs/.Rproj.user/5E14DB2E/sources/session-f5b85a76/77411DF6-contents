@@ -1,0 +1,168 @@
+---
+title: "Lab 6"
+format: pdf
+editor: visual
+---
+
+## Sigma
+
+```{r}
+library(tidyverse)
+library(here)
+# for bayes stuff
+library(rstan)
+library(bayesplot)
+library(loo)
+library(tidybayes)
+ds <- read_rds(here("births_2017_sample.RDS"))
+head(ds)
+
+
+```
+
+## Question 1
+```{r}
+ds <- ds %>%
+rename(birthweight = dbwt, gest = combgest) %>%
+mutate(preterm = ifelse(gest<32, "Y", "N")) %>%
+filter(ilive=="Y",gest< 99, birthweight<9.999)
+```
+
+## Question 2
+
+```{r}
+library(ggplot2)
+
+scatter_plot <- ggplot(ds, aes(x = gest, y = birthweight)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE, color = "blue") +
+  labs(title = "Scatter Plot of Gestational Age vs. Birthweight",
+       x = "Gestational Age",
+       y = "Birthweight")
+
+histogram_plot <- ggplot(ds, aes(x = birthweight)) +
+  geom_histogram(binwidth = 0.5, fill = "green", color = "black") +
+  labs(title = "Histogram of Birthweights",
+       x = "Birthweight",
+       y = "Frequency")
+
+preterm_proportion_table <- ds %>%
+  group_by(preterm) %>%
+  summarize(Proportion = n() / nrow(ds) * 100) %>%
+  mutate(Preterm = ifelse(preterm == "Y", "Yes", "No"))
+
+scatter_plot
+histogram_plot
+preterm_proportion_table
+```
+
+
+
+## Question 3
+
+```{r}
+# Load necessary libraries
+library(ggplot2)
+library(MASS)  # For mvrnorm function
+
+# Set seed for reproducibility
+set.seed(123)
+
+# Number of simulations
+n_simulations <- 1000
+
+# True parameter values (you can adjust these based on your priors)
+beta_1 <- 0.5
+beta_2 <- 0.8
+sigma <- 0.2
+
+# Simulate values of 𝛽s and 𝜎 based on the priors
+simulated_params <- mvrnorm(n = n_simulations, mu = c(beta_1, beta_2, sigma), Sigma = matrix(c(0.01, 0, 0, 0, 0.01, 0, 0, 0, 0.01), nrow = 3))
+
+# Extract simulated parameters
+simulated_betas <- simulated_params[, 1:2]
+simulated_sigma <- simulated_params[, 3]
+
+# Assuming you have a dataframe 'ds' with 'gest', 'birthweight', and 'preterm' columns
+# Center and standardize gestational age
+ds$gest_standardized <- scale(ds$gest, center = TRUE, scale = TRUE)
+
+# Simulate (log) birth weights based on Model 1 likelihood
+simulated_log_weights <- matrix(NA, nrow = n_simulations, ncol = nrow(ds))
+for (i in 1:n_simulations) {
+  simulated_log_weights[i, ] <- simulated_betas[i, 1] + simulated_betas[i, 2] * ds$gest_standardized + rnorm(nrow(ds), mean = 0, sd = simulated_sigma[i])
+}
+
+# Plot the resulting distribution of simulated (log) birth weights
+ggplot() +
+  geom_density(aes(x = simulated_log_weights[ ,1]), fill = "skyblue", alpha = 0.5) +
+  labs(title = "Distribution of Simulated (log) Birth Weights",
+       x = "Simulated (log) Birth Weight")
+
+# Plot ten simulations of (log) birthweights against gestational age
+plot_data <- data.frame(gest_standardized = rep(ds$gest_standardized, each = 10),
+                        simulated_log_weights = as.vector(simulated_log_weights[1:10, ]))
+
+ggplot(plot_data, aes(x = gest_standardized, y = simulated_log_weights)) +
+  geom_line(aes(group = rep(1:10, each = nrow(ds))), alpha = 0.5, color = "blue") +
+  labs(title = "Simulated (log) Birth Weights against Gestational Age",
+       x = "Standardized Gestational Age",
+       y = "Simulated (log) Birth Weight")
+
+
+```
+
+```{r}
+ds$log_weight <- log(ds$birthweight)
+ds$log_gest_c <- (log(ds$gest) - mean(log(ds$gest)))/sd(log(ds$gest))
+# put into a list
+stan_data <- list(N = nrow(ds),
+log_weight = ds$log_weight,
+log_gest = ds$log_gest_c)
+
+```
+
+
+```{r}
+mod1 <- stan(data = stan_data,
+file = here("code/models/simple_weight.stan"),
+iter = 500,
+seed = 243)
+```
+
+## Question 3
+```{r}
+posterior_samples <- rstan::extract(mod1)
+beta_post <- posterior_samples$beta
+sigma_post <- posterior_samples$sigma
+new_log_gest <- log(37)
+sd_original <- sd(ds$gest)
+sd_standardized <- sd(ds$gest_standardized)
+factor_sd <- sd_original/sd_standardized
+estimated_birthweight <- median(beta_post[,1]) + exp(new_log_gest*median(beta_post[,2])*factor_sd)
+estimated_birthweight
+```
+
+## Question 4
+
+```{r}
+df <- data.frame()
+lin_pred <- NULL
+lin_pred <- beta_post[,1] + beta_post[,2]
+temp_df <- data.frame( lin_pred = lin_pred, 
+                        beta_0 = beta_post[,1], beta_1 = beta_post[,2])
+lin_pred
+ggplot() +
+  geom_point(data = ds, aes(x = gest, y = birthweight), color="blue") +
+  geom_point(data = temp_df,aes(x = beta_1, y=lin_pred), col='red')
+```
+
+## Question 5
+
+```{r}
+mod2 <- stan(data = stan_data,
+file = here("code/models/simple_weight_model_2.stan"),
+iter = 500,
+seed = 243)
+
+```

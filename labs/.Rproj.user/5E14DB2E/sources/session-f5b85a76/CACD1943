@@ -1,0 +1,26 @@
+{
+    "id": "CACD1943",
+    "path": "~/GitHub/STA2201WorkRudra/labs/code/models/simple_weight.stan",
+    "project_path": "code/models/simple_weight.stan",
+    "type": "stan",
+    "hash": "0",
+    "contents": "",
+    "dirty": true,
+    "created": 1708038128729.0,
+    "source_on_save": false,
+    "relative_order": 6,
+    "properties": {
+        "source_window_id": "",
+        "Source": "Source",
+        "cursorPosition": "23,60",
+        "scrollLine": "0"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1708036514,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1708050117570,
+    "read_only": false,
+    "read_only_alternatives": []
+}

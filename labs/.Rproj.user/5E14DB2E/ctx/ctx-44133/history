@@ -1,0 +1,512 @@
+group_by(code)|>
+summarise(no_rows = length(code))|>
+arrange(-no_rows)|>
+mutate(cumulative_sum = cumsum(no_rows))|>
+mutate(half_sum = sum(no_rows)/2)|>
+filter(cumulative_sum<=half_sum)
+delay_2022_top_0.5
+frequent_delay_codes <- delay_2022_top_0.5$code
+frequent_delay_codes
+lm_table_delay_code <- delay_2022|>
+filter(min_delay>0 & (code %in% frequent_delay_codes))
+delay_model <- lm(min_delay ~ line*code, data = lm_table_delay_code)
+summary(delay_model)
+lm_table_delay_code
+all_data <- search_packages("campaign")
+campaign_id <- all_data$id
+resource <- list_package_resources(campaign_id[1])
+resource
+campaign_data <- get_resource('8b42906f-c894-4e93-a98e-acac200f34a4')
+campaign_data_mayoral <- campaign_data[[2]]
+colnames(campaign_data_mayoral) <- as.character(campaign_data_mayoral[1,])
+campaign_data_mayoral <- campaign_data_mayoral[-1,]
+rownames(campaign_data_mayoral) <- NULL
+campaign_data_mayoral <- clean_names(campaign_data_mayoral)
+campaign_data_mayoral
+not_all_na <- function(x) all(!is.na(x))
+campaign_data_mayoral <- campaign_data_mayoral|>
+select(where(not_all_na))
+campaign_data_mayoral
+campaign_data_mayoral$contributor_type_desc <- as.factor(campaign_data_mayoral$contributor_type_desc)
+campaign_data_mayoral$contribution_type_desc <- as.factor(campaign_data_mayoral$contribution_type_desc)
+campaign_data_mayoral$contribution_amount <- as.numeric(campaign_data_mayoral$contribution_amount)
+campaign_data_mayoral
+campaign_data_mayoral |> arrange(-contribution_amount)
+ggplot(data = campaign_data_mayoral,aes(x=contribution_amount))+
+geom_dotplot()
+campaign_data_mayoral_contribution_distribution <-
+campaign_data_mayoral |> filter(contribution_amount < 500000)
+ggplot(data=campaign_data_mayoral_contribution_distribution, aes(x=contribution_amount))+
+geom_dotplot()
+campaign_data_mayoral_contribution_distribution_2 <-
+campaign_data_mayoral |> filter(contribution_amount < 10000)
+ggplot(data=campaign_data_mayoral_contribution_distribution_2, aes(x=contribution_amount))+
+geom_histogram()
+ggplot(data = campaign_data_mayoral, aes(x = candidate,
+y = contribution_amount,
+color = contribution_type_desc ))+
+geom_point()+
+geom_smooth()+
+theme(axis.text.x = element_text(angle = 90, hjust = 1))
+non_candidate_contri <- campaign_data_mayoral |>
+filter(contributors_name != candidate)
+non_candidate_contri <- non_candidate_contri|>
+group_by(candidate) |>
+summarise(
+total_contri_popular = sum(contribution_amount, na.rm = TRUE),
+mean_contri_popular = mean(contribution_amount, na.rm = TRUE),
+contri_count_popular = n()
+)
+top_total_contri_popular <- non_candidate_contri |>
+arrange(-total_contri_popular)|>
+select(candidate,total_contri_popular)|>
+head(5)
+top_mean_contri_popular <- non_candidate_contri |>
+arrange(-mean_contri_popular)|>
+select(candidate,mean_contri_popular)|>
+head(5)
+top_contri_count_popular <- non_candidate_contri |>
+arrange(-contri_count_popular)|>
+select(candidate,contri_count_popular)|>
+head(5)
+top_total_contri_popular
+top_mean_contri_popular
+top_contri_count_popular
+multiple_contri <- campaign_data_mayoral |>
+group_by(contributors_name) |>
+summarise(unique_candidates = n_distinct(candidate))
+multiple_contri_count <- sum(multiple_contri$unique_candidates > 1)
+multiple_contri_count
+#| message: false
+library(opendatatoronto)
+library(tidyverse)
+library(stringr)
+library(skimr) # EDA
+library(visdat) # EDA
+library(janitor)
+library(lubridate)
+library(ggrepel)
+all_data <- list_packages(limit = 500)
+head(all_data)
+res <- list_package_resources("996cfe8d-fb35-40ce-b569-698d51fc683b") # obtained code from searching data frame above
+res <- res |> mutate(year = str_extract(name, "202.?"))
+delay_2022_ids <- res |> filter(year==2022) |> select(id) |> pull()
+delay_2022 <- get_resource(delay_2022_ids)
+# make the column names nicer to work with
+delay_2022 <- clean_names(delay_2022)
+# note: I obtained these codes from the 'id' column in the `res` object above
+delay_codes <- get_resource("3900e649-f31e-4b79-9f20-4731bbfd94f7")
+delay_data_codebook <- get_resource("ca43ac3d-3940-4315-889b-a9375e7b8aa4")
+head(delay_2022)
+delay_2022 |>
+group_by(station,line) |>
+summarise(mean_delay=mean(min_delay)) |>
+arrange(-mean_delay)|>
+head(5) |>
+ggplot(aes(x = station,
+y = mean_delay))+
+geom_col()+
+facet_wrap(.~line)+
+theme(axis.text.x = element_text(angle = 90, hjust = 1))
+delay_2022 <- delay_2022 |>
+left_join(delay_codes |> rename(code = `SUB RMENU CODE`, code_desc = `CODE DESCRIPTION...3`) |> select(code, code_desc))
+delay_2022_top_0.5 <- delay_2022 |>
+filter(min_delay>0)|>
+group_by(code)|>
+summarise(no_rows = length(code))|>
+arrange(-no_rows)|>
+mutate(cumulative_sum = cumsum(no_rows))|>
+mutate(half_sum = sum(no_rows)/2)|>
+filter(cumulative_sum<=half_sum)
+delay_2022_top_0.5
+frequent_delay_codes <- delay_2022_top_0.5$code
+frequent_delay_codes
+lm_table_delay_code <- delay_2022|>
+filter(min_delay>0 & (code %in% frequent_delay_codes))
+delay_model <- lm(min_delay ~ line + code, data = lm_table_delay_code)
+summary(delay_model)
+lm_table_delay_code
+library(opendatatoronto)
+library(janitor)
+all_data <- search_packages("campaign")
+campaign_id <- all_data$id
+resource <- list_package_resources(campaign_id[1])
+resource
+campaign_data <- get_resource('8b42906f-c894-4e93-a98e-acac200f34a4')
+campaign_data_mayoral <- campaign_data[[2]]
+colnames(campaign_data_mayoral) <- as.character(campaign_data_mayoral[1,])
+campaign_data_mayoral <- campaign_data_mayoral[-1,]
+rownames(campaign_data_mayoral) <- NULL
+campaign_data_mayoral <- clean_names(campaign_data_mayoral)
+campaign_data_mayoral
+not_all_na <- function(x) all(!is.na(x))
+campaign_data_mayoral <- campaign_data_mayoral|>
+select(where(not_all_na))
+campaign_data_mayoral
+campaign_data_mayoral$contributor_type_desc <- as.factor(campaign_data_mayoral$contributor_type_desc)
+campaign_data_mayoral$contribution_type_desc <- as.factor(campaign_data_mayoral$contribution_type_desc)
+campaign_data_mayoral$contribution_amount <- as.numeric(campaign_data_mayoral$contribution_amount)
+campaign_data_mayoral
+campaign_data_mayoral |> arrange(-contribution_amount)
+ggplot(data = campaign_data_mayoral,aes(x=contribution_amount))+
+geom_dotplot()
+campaign_data_mayoral_contribution_distribution <-
+campaign_data_mayoral |> filter(contribution_amount < 500000)
+ggplot(data=campaign_data_mayoral_contribution_distribution, aes(x=contribution_amount))+
+geom_dotplot()
+campaign_data_mayoral_contribution_distribution_2 <-
+campaign_data_mayoral |> filter(contribution_amount < 10000)
+ggplot(data=campaign_data_mayoral_contribution_distribution_2, aes(x=contribution_amount))+
+geom_histogram()
+ggplot(data = campaign_data_mayoral, aes(x = candidate,
+y = contribution_amount,
+color = contribution_type_desc ))+
+geom_point()+
+geom_smooth()+
+theme(axis.text.x = element_text(angle = 90, hjust = 1))
+candidate_contri <- campaign_data_mayoral|>
+group_by(candidate) |>
+summarise(
+total_contri = sum(contribution_amount, na.rm = TRUE),
+mean_contri = mean(contribution_amount, na.rm = TRUE),
+contri_count = n()
+)
+top_total_contri <- candidate_contri |>
+arrange(-total_contri)|>
+select(candidate,total_contri)|>
+head(5)
+top_mean_contri <- candidate_contri |>
+arrange(-mean_contri)|>
+select(candidate,mean_contri)|>
+head(5)
+top_contri_count <- candidate_contri |>
+arrange(-contri_count)|>
+select(candidate,contri_count)|>
+head(5)
+top_total_contri
+top_mean_contri
+top_contri_count
+non_candidate_contri <- campaign_data_mayoral |>
+filter(contributors_name != candidate)
+non_candidate_contri <- non_candidate_contri|>
+group_by(candidate) |>
+summarise(
+total_contri_popular = sum(contribution_amount, na.rm = TRUE),
+mean_contri_popular = mean(contribution_amount, na.rm = TRUE),
+contri_count_popular = n()
+)
+top_total_contri_popular <- non_candidate_contri |>
+arrange(-total_contri_popular)|>
+select(candidate,total_contri_popular)|>
+head(5)
+top_mean_contri_popular <- non_candidate_contri |>
+arrange(-mean_contri_popular)|>
+select(candidate,mean_contri_popular)|>
+head(5)
+top_contri_count_popular <- non_candidate_contri |>
+arrange(-contri_count_popular)|>
+select(candidate,contri_count_popular)|>
+head(5)
+top_total_contri_popular
+top_mean_contri_popular
+top_contri_count_popular
+skim(campaign_data_mayoral)
+#| message: false
+library(opendatatoronto)
+library(tidyverse)
+library(stringr)
+library(skimr) # EDA
+library(visdat) # EDA
+library(janitor)
+library(lubridate)
+library(ggrepel)
+all_data <- list_packages(limit = 500)
+head(all_data)
+res <- list_package_resources("996cfe8d-fb35-40ce-b569-698d51fc683b") # obtained code from searching data frame above
+res <- res |> mutate(year = str_extract(name, "202.?"))
+delay_2022_ids <- res |> filter(year==2022) |> select(id) |> pull()
+delay_2022 <- get_resource(delay_2022_ids)
+# make the column names nicer to work with
+delay_2022 <- clean_names(delay_2022)
+# note: I obtained these codes from the 'id' column in the `res` object above
+delay_codes <- get_resource("3900e649-f31e-4b79-9f20-4731bbfd94f7")
+delay_data_codebook <- get_resource("ca43ac3d-3940-4315-889b-a9375e7b8aa4")
+head(delay_2022)
+delay_2022 |>
+group_by(station,line) |>
+summarise(mean_delay=mean(min_delay)) |>
+arrange(-mean_delay)|>
+head(5) |>
+ggplot(aes(x = station,
+y = mean_delay))+
+geom_col()+
+facet_wrap(.~line)+
+theme(axis.text.x = element_text(angle = 90, hjust = 1))
+delay_2022 <- delay_2022 |>
+left_join(delay_codes |> rename(code = `SUB RMENU CODE`, code_desc = `CODE DESCRIPTION...3`) |> select(code, code_desc))
+delay_2022_top_0.5 <- delay_2022 |>
+filter(min_delay>0)|>
+group_by(code)|>
+summarise(no_rows = length(code))|>
+arrange(-no_rows)|>
+mutate(cumulative_sum = cumsum(no_rows))|>
+mutate(half_sum = sum(no_rows)/2)|>
+filter(cumulative_sum<=half_sum)
+delay_2022_top_0.5
+frequent_delay_codes <- delay_2022_top_0.5$code
+frequent_delay_codes
+lm_table_delay_code <- delay_2022|>
+filter(min_delay>0 & (code %in% frequent_delay_codes))
+delay_model <- lm(min_delay ~ line + code, data = lm_table_delay_code)
+summary(delay_model)
+lm_table_delay_code
+library(opendatatoronto)
+library(janitor)
+all_data <- search_packages("campaign")
+campaign_id <- all_data$id
+resource <- list_package_resources(campaign_id[1])
+resource
+campaign_data <- get_resource('8b42906f-c894-4e93-a98e-acac200f34a4')
+campaign_data_mayoral <- campaign_data[[2]]
+colnames(campaign_data_mayoral) <- as.character(campaign_data_mayoral[1,])
+campaign_data_mayoral <- campaign_data_mayoral[-1,]
+rownames(campaign_data_mayoral) <- NULL
+campaign_data_mayoral <- clean_names(campaign_data_mayoral)
+campaign_data_mayoral
+skim(campaign_data_mayoral)
+not_all_na <- function(x) all(!is.na(x))
+campaign_data_mayoral <- campaign_data_mayoral|>
+select(where(not_all_na))
+campaign_data_mayoral
+campaign_data_mayoral$contributor_type_desc <- as.factor(campaign_data_mayoral$contributor_type_desc)
+campaign_data_mayoral$contribution_type_desc <- as.factor(campaign_data_mayoral$contribution_type_desc)
+campaign_data_mayoral$contribution_amount <- as.numeric(campaign_data_mayoral$contribution_amount)
+campaign_data_mayoral
+campaign_data_mayoral |> arrange(-contribution_amount)
+ggplot(data = campaign_data_mayoral,aes(x=contribution_amount))+
+geom_dotplot()
+campaign_data_mayoral_contribution_distribution <-
+campaign_data_mayoral |> filter(contribution_amount < 500000)
+ggplot(data=campaign_data_mayoral_contribution_distribution, aes(x=contribution_amount))+
+geom_dotplot()
+campaign_data_mayoral_contribution_distribution_2 <-
+campaign_data_mayoral |> filter(contribution_amount < 10000)
+ggplot(data=campaign_data_mayoral_contribution_distribution_2, aes(x=contribution_amount))+
+geom_histogram()
+ggplot(data = campaign_data_mayoral, aes(x = candidate,
+y = contribution_amount,
+color = contribution_type_desc ))+
+geom_point()+
+geom_smooth()+
+theme(axis.text.x = element_text(angle = 90, hjust = 1))
+candidate_contri <- campaign_data_mayoral|>
+group_by(candidate) |>
+summarise(
+total_contri = sum(contribution_amount, na.rm = TRUE),
+mean_contri = mean(contribution_amount, na.rm = TRUE),
+contri_count = n()
+)
+top_total_contri <- candidate_contri |>
+arrange(-total_contri)|>
+select(candidate,total_contri)|>
+head(5)
+top_mean_contri <- candidate_contri |>
+arrange(-mean_contri)|>
+select(candidate,mean_contri)|>
+head(5)
+top_contri_count <- candidate_contri |>
+arrange(-contri_count)|>
+select(candidate,contri_count)|>
+head(5)
+top_total_contri
+top_mean_contri
+top_contri_count
+non_candidate_contri <- campaign_data_mayoral |>
+filter(contributors_name != candidate)
+non_candidate_contri <- non_candidate_contri|>
+group_by(candidate) |>
+summarise(
+total_contri_popular = sum(contribution_amount, na.rm = TRUE),
+mean_contri_popular = mean(contribution_amount, na.rm = TRUE),
+contri_count_popular = n()
+)
+top_total_contri_popular <- non_candidate_contri |>
+arrange(-total_contri_popular)|>
+select(candidate,total_contri_popular)|>
+head(5)
+top_mean_contri_popular <- non_candidate_contri |>
+arrange(-mean_contri_popular)|>
+select(candidate,mean_contri_popular)|>
+head(5)
+top_contri_count_popular <- non_candidate_contri |>
+arrange(-contri_count_popular)|>
+select(candidate,contri_count_popular)|>
+head(5)
+top_total_contri_popular
+top_mean_contri_popular
+top_contri_count_popular
+View(campaign_data_mayoral)
+campaign_data_mayoral |> distinct()
+duplicated(campaign_data_mayoral)
+campaign_data_mayoral[duplicated(campaign_data_mayoral),]
+campaign_data_mayoral|>
+distinct()
+campaign_data_mayoral|>
+filter(n()>1)
+campaign_data_mayoral|>
+filter(n()>2)
+campaign_data_mayoral|>
+filter(n()>3)
+campaign_data_mayoral|>
+filter(n()>10)
+campaign_data_mayoral|>
+group_by(contribution_amount)
+filter(n()>1)
+campaign_data_mayoral|>
+group_by(contribution_amount)|>
+filter(n()>1)
+campaign_data_mayoral[duplicated(campaign_data_mayoral),]
+library(tidyverse)
+library(here)
+install.packages('here')
+install.packages('bayesplot')
+library(tidyverse)
+library(here)
+# for bayes stuff
+library(rstan)
+install.packages("rstan")
+library(tidyverse)
+library(here)
+# for bayes stuff
+library(rstan)
+library(bayesplot)
+library(loo)
+library(tidybayes)
+install.packages('tidybayes')
+library(tidyverse)
+library(here)
+# for bayes stuff
+library(rstan)
+library(bayesplot)
+library(loo)
+library(tidybayes)
+ds <- read_rds(here("data","births_2017_sample.RDS"))
+library(tidyverse)
+library(here)
+# for bayes stuff
+library(rstan)
+library(bayesplot)
+library(loo)
+library(tidybayes)
+ds <- read_rds(here("data","births_2017_sample.RDS"))
+library(tidyverse)
+library(here)
+# for bayes stuff
+library(rstan)
+library(bayesplot)
+library(loo)
+library(tidybayes)
+ds <- read_rds(here("data","births_2017_sample.RDS"))
+library(tidyverse)
+library(here)
+# for bayes stuff
+library(rstan)
+library(bayesplot)
+library(loo)
+library(tidybayes)
+ds <- read_rds(here("births_2017_sample.RDS"))
+head(ds)
+ds <- ds %>%
+rename(birthweight = dbwt, gest = combgest) %>%
+mutate(preterm = ifelse(gest<32, "Y", "N")) %>%
+filter(ilive=="Y",gest< 99, birthweight<9.999)
+ds
+library(ggplot2)
+scatter_plot <- ggplot(ds, aes(x = gest, y = birthweight)) +
+geom_point() +
+geom_smooth(method = "lm", se = FALSE, color = "blue") +
+labs(title = "Scatter Plot of Gestational Age vs. Birthweight",
+x = "Gestational Age",
+y = "Birthweight")
+histogram_plot <- ggplot(ds, aes(x = birthweight)) +
+geom_histogram(binwidth = 0.5, fill = "green", color = "black") +
+labs(title = "Histogram of Birthweights",
+x = "Birthweight",
+y = "Frequency")
+preterm_proportion_table <- ds %>%
+group_by(preterm) %>%
+summarize(Proportion = n() / nrow(ds) * 100) %>%
+mutate(Preterm = ifelse(preterm == "Y", "Yes", "No"))
+scatter_plot
+histogram_plot
+preterm_proportion_table
+# Load necessary libraries
+library(ggplot2)
+library(MASS)  # For mvrnorm function
+# Set seed for reproducibility
+set.seed(123)
+# Number of simulations
+n_simulations <- 1000
+# True parameter values (you can adjust these based on your priors)
+beta_1 <- 0.5
+beta_2 <- 0.8
+sigma <- 0.2
+# Simulate values of 𝛽s and 𝜎 based on the priors
+simulated_params <- mvrnorm(n = n_simulations, mu = c(beta_1, beta_2, sigma), Sigma = matrix(c(0.01, 0, 0, 0, 0.01, 0, 0, 0, 0.01), nrow = 3))
+# Extract simulated parameters
+simulated_betas <- simulated_params[, 1:2]
+simulated_sigma <- simulated_params[, 3]
+# Assuming you have a dataframe 'ds' with 'gest', 'birthweight', and 'preterm' columns
+# Center and standardize gestational age
+ds$gest_standardized <- scale(ds$gest, center = TRUE, scale = TRUE)
+# Simulate (log) birth weights based on Model 1 likelihood
+simulated_log_weights <- matrix(NA, nrow = n_simulations, ncol = nrow(ds))
+for (i in 1:n_simulations) {
+simulated_log_weights[i, ] <- simulated_betas[i, 1] + simulated_betas[i, 2] * ds$gest_standardized + rnorm(nrow(ds), mean = 0, sd = simulated_sigma[i])
+}
+# Plot the resulting distribution of simulated (log) birth weights
+ggplot() +
+geom_density(aes(x = simulated_log_weights[ ,1]), fill = "skyblue", alpha = 0.5) +
+labs(title = "Distribution of Simulated (log) Birth Weights",
+x = "Simulated (log) Birth Weight")
+# Plot ten simulations of (log) birthweights against gestational age
+plot_data <- data.frame(gest_standardized = rep(ds$gest_standardized, each = 10),
+simulated_log_weights = as.vector(simulated_log_weights[1:10, ]))
+ggplot(plot_data, aes(x = gest_standardized, y = simulated_log_weights)) +
+geom_line(aes(group = rep(1:10, each = nrow(ds))), alpha = 0.5, color = "blue") +
+labs(title = "Simulated (log) Birth Weights against Gestational Age",
+x = "Standardized Gestational Age",
+y = "Simulated (log) Birth Weight")
+ds$log_weight <- log(ds$birthweight)
+ds$log_gest_c <- (log(ds$gest) - mean(log(ds$gest)))/sd(log(ds$gest))
+# put into a list
+stan_data <- list(N = nrow(ds),
+log_weight = ds$log_weight,
+log_gest = ds$log_gest_c)
+ds$log_weight <- log(ds$birthweight)
+ds$log_gest_c <- (log(ds$gest) - mean(log(ds$gest)))/sd(log(ds$gest))
+# put into a list
+stan_data <- list(N = nrow(ds),
+log_weight = ds$log_weight,
+log_gest = ds$log_gest_c)
+mod1 <- stan(data = stan_data,
+file = here("code/models/simple_weight.stan"),
+iter = 500,
+seed = 243)
+mod1 <- stan(data = stan_data,
+file = here("code/models/simple_weight.stan"),
+iter = 500,
+seed = 243)
+mod1 <- stan(data = stan_data,
+file = here("code/models/simple_weight.stan"),
+iter = 500,
+seed = 243)
+mod1 <- stan(data = stan_data,
+file = here("code/models/simple_weight.stan"),
+iter = 500,
+seed = 243)
+file.rename("~/.R/Makevars.win", "~/.R/Makevars.win.bak")
+This worked for me - thanks!
+file.rename("~/.R/Makevars.win", "~/.R/Makevars.win.bak")
+remove.packages("rstan")
+if (file.exists(".RData")) file.remove(".RData")

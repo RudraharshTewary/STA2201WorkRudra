@@ -1,0 +1,3 @@
+"0","fit |> "
+"0","  gather_draws(mu, sigma) |> "
+"0","  median_qi(.width = 0.8)"

@@ -1,6 +1,0 @@
-"0",""
-"0","campaign_data_mayoral_contribution_distribution_2 <- "
-"0","  campaign_data_mayoral |> filter(contribution_amount < 10000)"
-"0",""
-"0","ggplot(data=campaign_data_mayoral_contribution_distribution_2, aes(x=contribution_amount))+"
-"0","  geom_histogram()"

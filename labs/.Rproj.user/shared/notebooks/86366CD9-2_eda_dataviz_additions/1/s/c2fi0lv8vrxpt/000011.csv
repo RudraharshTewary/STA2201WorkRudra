@@ -1,3 +1,0 @@
-"0",""
-"0","ggplot(data = campaign_data_mayoral,aes(x=contribution_amount))+"
-"0","  geom_dotplot()"

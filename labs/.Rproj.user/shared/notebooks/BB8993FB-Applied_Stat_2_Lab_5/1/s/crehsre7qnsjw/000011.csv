@@ -1,0 +1,3 @@
+"0","posterior_95 <- alpha_posterior + beta_1 + beta_2*(95-mean(kidiq$mom_iq)) + sigma_post"
+"0",""
+"0","hist(posterior_95,main = ""Posterior predictive plot for new kid"", xlab=""Predicted Scores"",col=""green"")"

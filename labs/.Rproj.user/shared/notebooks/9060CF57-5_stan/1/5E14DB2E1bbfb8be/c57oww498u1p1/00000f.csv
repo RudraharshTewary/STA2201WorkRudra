@@ -1,0 +1,13 @@
+"0","dsamples |> "
+"0","  filter(.variable == ""mu"") |> "
+"0","  ggplot(aes(.value, color = ""posterior"")) + geom_density(size = 1) + "
+"0","  xlim(c(70, 100)) + "
+"0","  stat_function(fun = dnorm, "
+"0","        args = list(mean = mu0, "
+"0","                    sd = sigma0), "
+"0","        aes(colour = 'prior'), size = 1) +"
+"0","  scale_color_manual(name = """", values = c(""prior"" = ""red"", ""posterior"" = ""black"")) + "
+"0","  ggtitle(""Prior and posterior for mean test scores"") + "
+"0","  xlab(""score"")"
+"2","Warning: Using `size` aesthetic for lines was deprecated in ggplot2 3.4.0.
+Please use `linewidth` instead."

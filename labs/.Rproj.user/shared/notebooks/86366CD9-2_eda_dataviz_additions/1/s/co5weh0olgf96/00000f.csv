@@ -1,6 +1,0 @@
-"0","delay_2022 <- delay_2022 |> "
-"0","  mutate(code_red = case_when("
-"0","    str_starts(code_desc, ""No"") ~ word(code_desc, 1, 2),"
-"0","    str_starts(code_desc, ""Operator"") ~ word(code_desc, 1,2),"
-"0","    TRUE ~ word(code_desc,1))"
-"0","         )"

@@ -1,0 +1,27 @@
+{
+    "id": "A8018C5A",
+    "path": "~/GitHub/STA2201WorkRudra/labs/code/models/simple_weight_model_2.stan",
+    "project_path": "code/models/simple_weight_model_2.stan",
+    "type": "stan",
+    "hash": "0",
+    "contents": "",
+    "dirty": true,
+    "created": 1708047756562.0,
+    "source_on_save": false,
+    "relative_order": 8,
+    "properties": {
+        "tempName": "Untitled2",
+        "source_window_id": "",
+        "Source": "Source",
+        "cursorPosition": "23,103",
+        "scrollLine": "0"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1708050130,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1708050631365,
+    "read_only": false,
+    "read_only_alternatives": []
+}

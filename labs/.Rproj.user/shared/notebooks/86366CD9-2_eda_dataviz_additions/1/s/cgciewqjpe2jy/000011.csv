@@ -1,2 +1,0 @@
-"0","delay_2022 |> "
-"0","  summarize(across(everything(), ~ sum(is.na(.x))))"
