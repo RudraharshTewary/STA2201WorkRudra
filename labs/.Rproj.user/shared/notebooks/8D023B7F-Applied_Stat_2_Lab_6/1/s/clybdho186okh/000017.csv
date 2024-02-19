@@ -1,0 +1,25 @@
+"1","------
+"
+"1","Monte Carlo SE of elpd_loo is"
+"1"," "
+"1","0.1.
+"
+"1","
+All Pareto k estimates are good (k < 0.5).
+"
+"1","See help('pareto-k-diagnostic') for details.
+"
+"0","loo_compare(loo1,loo2)"
+"1","      "
+"1"," elpd_diff"
+"1"," se_diff"
+"1","
+model2"
+"1","    0.0   "
+"1","    0.0 "
+"1","
+model1"
+"1"," -176.1   "
+"1","   36.3 "
+"1","
+"

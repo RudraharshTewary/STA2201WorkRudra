@@ -19,9 +19,9 @@ model {
 generated quantities {
   vector[N] log_lik;    // pointwise log-likelihood for LOO
   vector[N] log_weight_rep; // replications from posterior predictive dist
-
+  
   for (n in 1:N) {
-    real log_weight_hat_n = beta[1] + beta[2] * log_gest[n];
+    real log_weight_hat_n = beta[1] + beta[2] * log_gest[n] ;
     log_lik[n] = normal_lpdf(log_weight[n] | log_weight_hat_n, sigma);
     log_weight_rep[n] = normal_rng(log_weight_hat_n, sigma);
   }

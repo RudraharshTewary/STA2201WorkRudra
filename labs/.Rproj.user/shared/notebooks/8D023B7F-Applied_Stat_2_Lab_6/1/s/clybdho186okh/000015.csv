@@ -1,0 +1,21 @@
+"0","loglik1 <- rstan::extract(mod1)[[""log_lik""]]"
+"0","loo1 <- loo(loglik1, save_psis = TRUE)"
+"2","Warning: Relative effective sample sizes ('r_eff' argument) not specified.
+For models fit with MCMC, the reported PSIS effective sample sizes and 
+MCSE estimates will be over-optimistic."
+"0","loglik2 <- rstan::extract(mod2)[[""log_lik""]]"
+"0","loo2 <- loo(loglik2, save_psis = TRUE)"
+"2","Warning: Relative effective sample sizes ('r_eff' argument) not specified.
+For models fit with MCMC, the reported PSIS effective sample sizes and 
+MCSE estimates will be over-optimistic."
+"0","loo2"
+"1","
+"
+"1","Computed from"
+"1"," "
+"1","1000 by 3842"
+"1"," "
+"1","log-likelihood matrix
+"
+"1","
+"

@@ -1,0 +1,6 @@
+"0","obs_log_weight <- ds$log_weight"
+"0","ppc_mod3 <- rstan::extract(mod3)[['log_weight_rep']]"
+"0","samp_mod3_100 <- sample(nrow(ppc_mod3),100)"
+"0",""
+"0","ppc_dens_overlay(obs_log_weight,ppc_mod3[samp_mod3_100,])+"
+"0","  ggtitle(""Distribution of observed vs predicted birthweights model 3"")"

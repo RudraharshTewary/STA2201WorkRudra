@@ -1,0 +1,4 @@
+"0","summary(model1)"
+"2","Error in h(simpleError(msg, call)) : 
+  error in evaluating the argument 'object' in selecting a method for function 'summary': object 'model1' not found
+"
