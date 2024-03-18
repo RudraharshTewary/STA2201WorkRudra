@@ -1,4 +1,0 @@
-"0","kidiq <- read_rds(here(""data"",""kidiq.RDS""))"
-"2","Warning: cannot open file 'C:/Users/rudra/Documents/GitHub/STA2201WorkRudra/labs/data/kidiq.RDS': No such file or directory"
-"2","Error in readRDS(con, refhook = refhook) : cannot open the connection
-"

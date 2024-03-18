@@ -1,3 +1,0 @@
-"0",""
-"0","# wide format"
-"0","fit  |>  spread_draws(mu, sigma)"
