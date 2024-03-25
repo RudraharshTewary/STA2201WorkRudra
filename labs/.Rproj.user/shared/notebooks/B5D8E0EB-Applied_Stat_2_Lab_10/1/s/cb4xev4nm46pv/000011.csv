@@ -1,0 +1,8 @@
+"0","library(tidyverse)"
+"0","library(here)"
+"0","library(rstan)"
+"0","library(tidybayes)"
+"0",""
+"0","lka <- read_csv(here(""data/lka.csv""))"
+"2","Error: 'C:/Users/rudra/Documents/GitHub/STA2201WorkRudra/labs/data/lka.csv' does not exist.
+"

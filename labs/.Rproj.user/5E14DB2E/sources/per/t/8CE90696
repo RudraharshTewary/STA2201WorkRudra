@@ -1,0 +1,27 @@
+{
+    "id": "8CE90696",
+    "path": "~/GitHub/STA2201WorkRudra/labs/code/models/lka_linear_me_rw2.stan",
+    "project_path": "code/models/lka_linear_me_rw2.stan",
+    "type": "stan",
+    "hash": "660233746",
+    "contents": "",
+    "dirty": false,
+    "created": 1711310294021.0,
+    "source_on_save": false,
+    "relative_order": 2,
+    "properties": {
+        "tempName": "Untitled1",
+        "source_window_id": "",
+        "Source": "Source",
+        "cursorPosition": "5,30",
+        "scrollLine": "0"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1711342124,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1711342124090,
+    "read_only": false,
+    "read_only_alternatives": []
+}

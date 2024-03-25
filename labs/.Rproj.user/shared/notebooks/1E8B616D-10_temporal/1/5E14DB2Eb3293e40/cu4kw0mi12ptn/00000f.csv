@@ -1,0 +1,4 @@
+"0","res <- mod %>% "
+"0","  gather_draws(mu[t]) %>% "
+"0","  median_qi() %>% "
+"0","  mutate(year = years[t])"

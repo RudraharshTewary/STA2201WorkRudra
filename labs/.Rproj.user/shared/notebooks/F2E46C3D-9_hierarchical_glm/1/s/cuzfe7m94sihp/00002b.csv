@@ -1,8 +1,0 @@
-"0",""
-"0","# Plot 2: Differences in thetas Across Models"
-"0","plot_data_long <- gather(plot_data, model, theta, -region)"
-"0","ggplot(plot_data_long, aes(x = region, y = theta, color = model)) +"
-"0","  geom_point(size = 3) +"
-"0","  labs(x = ""Region"", y = ""Estimated theta_i"","
-"0","       title = ""Differences in thetas Across Models"") +"
-"0","  theme_minimal()"

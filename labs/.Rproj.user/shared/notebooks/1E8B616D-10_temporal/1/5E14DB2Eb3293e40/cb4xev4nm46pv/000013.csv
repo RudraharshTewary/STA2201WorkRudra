@@ -1,0 +1,22 @@
+"0","library(tidyverse)"
+"0","library(here)"
+"0","library(rstan)"
+"0","library(tidybayes)"
+"0",""
+"0","lka <- read_csv(here(""lka.csv""))"
+"2","[1mRows: [22m[34m27[39m [1mColumns: [22m[34m7[39m"
+"2","[36m──[39m [1mColumn specification[22m [36m──────────────────────────────────────────────────────[39m
+[1mDelimiter:[22m "",""
+[31mchr[39m (3): country_name, country_code, source
+[32mdbl[39m (4): year, logit_ratio, se, ratio"
+"2","
+[36mℹ[39m Use `spec()` to retrieve the full column specification for this data.
+[36mℹ[39m Specify the column types or set `show_col_types = FALSE` to quiet this message."
+"0","ggplot(lka, aes(year, logit_ratio)) +"
+"0","  geom_point(aes( color = source)) + "
+"0","  geom_line(aes( color = source), lty = 2) + "
+"0","  geom_ribbon(aes(ymin = logit_ratio - se,"
+"0","                  ymax = logit_ratio + se,"
+"0","                  fill =  source), alpha = 0.1) +"
+"0","  theme_bw()+"
+"0","  labs(title = ""Ratio of neonatal to other child mortality (logged), Sri Lanka"", y = ""log ratio"")"
